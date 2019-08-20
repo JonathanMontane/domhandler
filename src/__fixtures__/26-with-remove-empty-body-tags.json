@@ -3,7 +3,7 @@
   "options": {
     "removeEmptyBodyTags": true
   },
-  "html": "<!DOCTYPE html><HTML><head><TITLE>The Title</title><meta name=\"og:title\" content=\"The og title\"></head><BODY><div>Hello world<div><div/></div><div class=\"someClass\"/></div></body></html>",
+  "html": "<!DOCTYPE html><HTML><head><TITLE>The Title</title><meta name=\"og:title\" content=\"The og title\"></head><BODY><div>Hello world<div><div/><div>   </div></div><div class=\"someClass\"/></div></body></html>",
   "expected": [
     {
       "name": "!doctype",

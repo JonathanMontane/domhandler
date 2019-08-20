@@ -188,6 +188,11 @@ export class DomHandler {
                 data = data.replace(reWhitespace, " ");
             }
 
+            if (this._options.removeEmptyBodyTags && this._inBody && data.trim() === '') {
+                this._lastNode = null;
+                return
+            }
+
             const node = new DataNode(ElementType.Text, data);
             this.addNode(node);
             this._lastNode = node;
