@@ -1,0 +1,66 @@
+{
+  "name": "remove-body-tags",
+  "options": {
+    "removeEmptyBodyTags": true
+  },
+  "html": "<!DOCTYPE html><HTML><head><TITLE>The Title</title><meta name=\"og:title\" content=\"The og title\"></head><BODY><div>Hello world<div><div/><div>   </div></div><div class=\"someClass\"/></div></body></html>",
+  "expected": [
+    {
+      "name": "!doctype",
+      "data": "!DOCTYPE html",
+      "type": "directive"
+    },
+    {
+      "type": "tag",
+      "name": "html",
+      "attribs": {},
+      "children": [
+        {
+          "type": "tag",
+          "name": "head",
+          "attribs": {},
+          "children": [
+            {
+              "type": "tag",
+              "name": "title",
+              "attribs": {},
+              "children": [
+                {
+                  "data": "The Title",
+                  "type": "text"
+                }
+              ]
+            },
+            {
+              "type": "tag",
+              "name": "meta",
+              "attribs": {
+                "name": "og:title",
+                "content": "The og title"
+              },
+              "children": []
+            }
+          ]
+        },
+        {
+          "type": "tag",
+          "name": "body",
+          "attribs": {},
+          "children": [
+            {
+              "type": "tag",
+              "name": "div",
+              "attribs": {},
+              "children": [
+                {
+                  "data": "Hello world",
+                  "type": "text"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

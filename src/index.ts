@@ -33,6 +33,11 @@ export interface DomHandlerOptions {
      * The default value is "false".
      */
     withEndIndices?: boolean;
+
+    /**
+     * Indicates wether the handler should recursively remove empty tags.
+     */
+    removeEmptyBodyTags?: boolean;
 }
 
 // Default options
@@ -62,6 +67,9 @@ export class DomHandler {
 
     /** Callback whenever a tag is closed. */
     private _elementCB: ElementCallback | null;
+
+    /** Indicates whether we are inside the <body> tag */
+    private _inBody = false;
 
     /** Indicated whether parsing has been completed. */
     private _done: boolean = false;
@@ -137,6 +145,14 @@ export class DomHandler {
             return;
         }
 
+        if (elem.name.toLowerCase() === 'body') {
+            this._inBody = false;
+        }
+
+        if (this._options.removeEmptyBodyTags && this._inBody && !elem.children.length) {
+            this.removeNode(elem);
+        }
+
         if (this._options.withEndIndices) {
             elem.endIndex = this._parser.endIndex;
         }
@@ -145,6 +161,9 @@ export class DomHandler {
     }
 
     public onopentag(name: string, attribs: { [key: string]: string }): void {
+        if (name.toLowerCase() === 'body') {
+            this._inBody = true;
+        }
         const element = new Element(name, attribs);
         this.addNode(element);
         this._tagStack.push(element);
@@ -167,6 +186,11 @@ export class DomHandler {
         } else {
             if (normalize) {
                 data = data.replace(reWhitespace, " ");
+            }
+
+            if (this._options.removeEmptyBodyTags && this._inBody && data.trim() === '') {
+                this._lastNode = null;
+                return
             }
 
             const node = new DataNode(ElementType.Text, data);
@@ -241,6 +265,24 @@ export class DomHandler {
 
         if (parent) {
             node.parent = parent;
+        }
+
+        this._lastNode = null;
+    }
+
+    protected removeNode(elem: Node) {
+        const parent = elem.parent;
+        const siblings = parent ? parent.children : this.dom;
+        const previousSibling = siblings[siblings.length - 1];
+
+        const updatedSiblings = siblings.slice(0, -1);
+
+        if (previousSibling) {
+            previousSibling.next = null;
+        }
+
+        if (parent) {
+            parent.children = updatedSiblings;
         }
 
         this._lastNode = null;
